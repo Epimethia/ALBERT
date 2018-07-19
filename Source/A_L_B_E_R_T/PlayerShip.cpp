@@ -47,7 +47,7 @@ APlayerShip::APlayerShip()
 	fCurrentTurnRate = 0.0f;
 	fMaxTurnRate = 1.0f;
 	fCurrentSpeed = 0.0f;
-	fMaxSpeed = 8.0f;
+	fMaxSpeed = 10.0f;
 	fMaxBackSpeed = 3.0f;
 	fFacingDegree = 0;
 
@@ -64,7 +64,7 @@ APlayerShip::APlayerShip()
 	Camera->SetupAttachment(Camera_Springarm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
 
-												// Movement
+	// Movement
 	MoveSpeed = 1000.0f;
 }
 

@@ -4,17 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Runtime/Engine/Classes/GameFramework/GameMode.h"
+#include "Engine.h"
 #include "PlayerShip.h"
 #include "Viking_Ram_Ship.h"
+#include <vector>
 #include "A_L_B_E_R_TGameModeBase.generated.h"
+
 
 UCLASS()
 class A_L_B_E_R_T_API AA_L_B_E_R_TGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	AA_L_B_E_R_TGameModeBase();
-	//AViking_Ram_Ship* Ship1;
+
+	virtual void StartPlay() override;
+
+	AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer);
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	std::vector<AViking_Ram_Ship*> ShipVector;
 };
 
 

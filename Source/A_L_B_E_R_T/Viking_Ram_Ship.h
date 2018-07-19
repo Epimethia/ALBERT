@@ -15,8 +15,6 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 
-
-
 #include "Viking_Ram_Ship.generated.h"
 
 UCLASS()
@@ -31,12 +29,26 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	//Ai Functions
+	void Seek(FVector _Target);
+
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//The Model of the ship
 	UStaticMeshComponent* ShipMesh;
 
-	
+	//Use WithinRange to activate/deactivate AI when not near player
+	bool WithinRange;
+
+	FVector Velocity ;
+	float MaxSpeed;
+	float MaxForce;
+	float ApproachRadius;
+
+	FVector Target;
 };
