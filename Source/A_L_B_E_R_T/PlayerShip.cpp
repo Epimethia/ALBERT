@@ -13,10 +13,20 @@ APlayerShip::APlayerShip()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Velocity = { 0.0f, 0.0f, 0.0f };
-	MaxSpeed = 5.0f;
-	MaxForce = 0.5f;
-	ApproachRadius = 100.0f;
+	fCurrentTurnRate = 0.0f;
+	fMaxTurnRate = 1.0f;
+	fCurrentSpeed = 0.0f;
+	fMaxSpeed = 8.0f;
+	fMaxBackSpeed = 3.0f;
+	fFacingDegree = 0;
+
+	MoveSpeed = 1000.0f;
+}
+
+// Called when the game starts or when spawned
+void APlayerShip::BeginPlay()
+{
+	Super::BeginPlay();
 
 	//Ship Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
@@ -44,14 +54,6 @@ APlayerShip::APlayerShip()
 	Viking_Throw->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
 	Viking_Throw->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
-	fCurrentTurnRate = 0.0f;
-	fMaxTurnRate = 1.0f;
-	fCurrentSpeed = 0.0f;
-	fMaxSpeed = 8.0f;
-	fMaxBackSpeed = 3.0f;
-	fFacingDegree = 0;
-
-	// Create a camera boom...
 	Camera_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	Camera_Springarm->SetupAttachment(RootComponent);
 	Camera_Springarm->bAbsoluteRotation = true; // Don't want arm to rotate when ship does
@@ -59,19 +61,9 @@ APlayerShip::APlayerShip()
 	Camera_Springarm->RelativeRotation = FRotator(-45.f, 0.f, 0.f);
 	Camera_Springarm->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
-												// Create a camera...
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	Camera->SetupAttachment(Camera_Springarm, USpringArmComponent::SocketName);
-	Camera->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
-
-												// Movement
-	MoveSpeed = 1000.0f;
-}
-
-// Called when the game starts or when spawned
-void APlayerShip::BeginPlay()
-{
-	Super::BeginPlay();
+	Camera->bUsePawnControlRotation = false;
 
 }
 

@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
+//Ship Components
 #include "Components/SphereComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
 
@@ -45,7 +45,6 @@ public:
 	float MaxForce;
 	float ApproachRadius;
 
-
 	//The static mesh for the Ship. Make it editable for now
 	UStaticMeshComponent* ShipMesh;
 	UStaticMeshComponent* Viking_Steer;
@@ -53,7 +52,6 @@ public:
 
 	class UCameraComponent* Camera;
 	class USpringArmComponent* Camera_Springarm;
-
 
 	float MoveSpeed;
 	void Movement(float DeltaSeconds);
