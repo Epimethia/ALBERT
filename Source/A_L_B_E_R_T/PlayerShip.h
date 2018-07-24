@@ -39,14 +39,17 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	FVector GunOffset;
+	UPROPERTY(Category = Audio, EditAnywhere, BlueprintReadWrite)
+		class USoundBase* FireSound;
 	FVector Velocity;
 	FVector Acceleration;
+	float FireRate;
 	float MaxSpeed;
 	float MaxForce;
 	float ApproachRadius;
-
-
+	bool bCanFire;
+	bool bFiring;
 	//The static mesh for the Ship. Make it editable for now
 	UStaticMeshComponent* ShipMesh;
 	UStaticMeshComponent* Ship_Rudder_Mesh;
@@ -59,12 +62,17 @@ public:
 
 	float MoveSpeed;
 	void Movement(float DeltaSeconds);
+	void FireShot(FVector FireDirection);
+	void FiringShot();
+	void StopingFire();
+	void ShotTimerExpired();
 
 	// Static names for axis bindings
 	static const FName MoveForwardBinding;
 	static const FName MoveRightBinding;
 	static const FName FireForwardBinding;
 	static const FName FireRightBinding;
+	static const FName FireMouseBinding;
 
 private:
 

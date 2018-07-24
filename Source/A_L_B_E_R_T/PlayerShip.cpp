@@ -1,15 +1,33 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerShip.h"
+#include "PlayerProjectile.h"
+
+
+#include "TimerManager.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Camera/CameraComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Engine/CollisionProfile.h"
+#include "Engine/StaticMesh.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "Engine/Engine.h"
+#include <iostream>
+#include <string>
 
 const FName APlayerShip::MoveForwardBinding("MoveForward");
 const FName APlayerShip::MoveRightBinding("MoveRight");
 const FName APlayerShip::FireForwardBinding("FireForward");
 const FName APlayerShip::FireRightBinding("FireRight");
-
+const FName APlayerShip::FireMouseBinding("MouseFire");
 // Sets default values
 APlayerShip::APlayerShip()
 {
+	bFiring = false;
+	bCanFire = true;
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -75,7 +93,8 @@ APlayerShip::APlayerShip()
 
 	// Movement
 	MoveSpeed = 1000.0f;
-
+	GunOffset = FVector(170.f, 0.f, 0.f);
+	FireRate = 0.1f;
 }
 
 // Called when the game starts or when spawned
@@ -89,6 +108,22 @@ void APlayerShip::BeginPlay()
 void APlayerShip::Tick(float DeltaTime)
 {
 	Movement(DeltaTime);
+	const float FireForwardValue = GetInputAxisValue(FireForwardBinding);
+	const float FireRightValue = GetInputAxisValue(FireRightBinding);
+	float fMouseX;
+	float fMouseY;
+	int iWidth;
+	int iHeight;
+	MyController->GetMousePosition(fMouseX, fMouseY);
+	MyController->GetViewportSize(iWidth, iHeight);
+	fMouseX = fMouseX - (iWidth / 2);
+	fMouseY = fMouseY - (iHeight / 2);
+	FVector FireDirection = FVector(fMouseX, fMouseY, 0.f);
+	FireDirection = FireDirection.RotateAngleAxis(90, FVector(0, 0, 1));
+
+
+	FireShot(FireDirection);
+
 }
 
 // Called to bind functionality to input
@@ -101,6 +136,8 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis(MoveRightBinding);
 	PlayerInputComponent->BindAxis(FireForwardBinding);
 	PlayerInputComponent->BindAxis(FireRightBinding);
+	PlayerInputComponent->BindAction(FireMouseBinding, IE_Pressed, this, &APlayerShip::FiringShot);
+	PlayerInputComponent->BindAction(FireMouseBinding, IE_Released, this, &APlayerShip::StopingFire);
 
 	MyController = Cast<APlayerController>(GetController());
 	if (MyController)
@@ -180,4 +217,53 @@ void APlayerShip::Movement(float DeltaSeconds)
 	}
 	if ((abs(fCurrentSpeed)) < 0.05) fCurrentSpeed = 0.0f;
 }
+
+void APlayerShip::FireShot(FVector FireDirection)
+{
+	// If it's ok to fire again
+	if (bFiring == true)
+	{
+		// If we are pressing fire stick in a direction
+		if (FireDirection.SizeSquared() > 0.0f)
+		{
+			const FRotator FireRotation = FireDirection.Rotation();
+			// Spawn projectile at an offset from this pawn
+			FVector SpawnLocation = GetActorLocation() + FireRotation.RotateVector(GunOffset);
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+				// spawn the projectile
+				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
+			}
+
+			bFiring = false;
+			World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
+
+			// try and play the sound if specified
+			if (FireSound != nullptr)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+			}
+
+			bFiring = false;
+		}
+	}
+}
+
+void APlayerShip::FiringShot()
+{
+	bFiring = true;
+}
+void APlayerShip::StopingFire()
+{
+	bFiring = false;
+}
+
+
+void APlayerShip::ShotTimerExpired()
+{
+	bCanFire = true;
+}
+
+
 
