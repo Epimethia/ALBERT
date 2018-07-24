@@ -15,7 +15,15 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 
+#include <cmath>
+
 #include "Viking_Ram_Ship.generated.h"
+
+enum STATE {
+	CHILLING,
+	CHASING,
+	EXPLODING
+};
 
 UCLASS()
 class A_L_B_E_R_T_API AViking_Ram_Ship : public AActor
@@ -33,8 +41,6 @@ protected:
 	//Ai Functions
 	void Seek(FVector _Target);
 
-
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -42,8 +48,12 @@ public:
 	//The Model of the ship
 	UStaticMeshComponent* ShipMesh;
 
-	//Use WithinRange to activate/deactivate AI when not near player
-	bool WithinRange;
+	STATE Current_State;
+	float ExplodeTimer;
+	bool Exploded;
+
+	void DestroyShip();
+	//UPROPERTY(EditAnywhere) UClass* Fire;
 
 	FVector Velocity ;
 	float MaxSpeed;

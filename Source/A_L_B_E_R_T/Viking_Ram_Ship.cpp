@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Viking_Ram_Ship.h"
-
 //Function to limit vector
 FVector Limit(FVector& _Vect, float _Max) {
 
@@ -19,18 +18,23 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 
 	//Ship Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
-	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Boat_Placeholder.Boat_Placeholder'")).Object);
-	ShipMesh->SetSimulatePhysics(true);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Flame_Boat/Fire_Boat.Fire_Boat'")).Object);
+	ShipMesh->SetSimulatePhysics(false);
 	ShipMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ShipMesh->SetRelativeTransform(FTransform(FVector(0.0f, 0.0f, -10.0f)));
 	ShipMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f), false, false);
 	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
 	RootComponent = ShipMesh;
 
-	WithinRange = false;
+	ExplodeTimer = 0.0f;
+	Exploded = false;
+
+	//static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint(TEXT("Blueprint'/Game/StarterContent/Blueprints/Blueprint_Effect_Fire.Blueprint_Effect_Fire'"));
+	//Fire = (UClass*)ItemBlueprint.Object->GeneratedClass;
+	
 
 	Velocity = FVector();
-	MaxSpeed = 100.0f;
+	MaxSpeed = 4.0f;
 	MaxForce = 0.5f;
 	ApproachRadius = 100.0f;
 }
@@ -39,6 +43,9 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 void AViking_Ram_Ship::BeginPlay()
 {
 	Super::BeginPlay();
+	Target = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	Current_State = CHILLING;
+
 
 }
 
@@ -61,20 +68,6 @@ void AViking_Ram_Ship::Seek(FVector _Target) {
 		DesiredVelocity *= (Distance / ApproachRadius);
 	}
 
-	////Containing the cube cats within the play area
-	//if (GetActorLocation().X >= 1800.0f) {
-	//	DesiredVelocity = FVector(-MaxSpeed, Velocity.Y, 0.0f);
-	//}
-	//else if (GetActorLocation().X <= -1800.0f) {
-	//	DesiredVelocity = FVector(MaxSpeed, Velocity.Y, 0.0f);
-	//}
-	//else if (GetActorLocation().Y >= 1800.0f) {
-	//	DesiredVelocity = FVector(Velocity.X, -MaxSpeed, 0.0f);
-	//}
-	//else if (GetActorLocation().Y <= -1800.0f) {
-	//	DesiredVelocity = FVector(Velocity.X, MaxSpeed, 0.0f);
-	//}
-
 	//Calculating the max force that would be applied to the object
 	FVector Steering = DesiredVelocity - Velocity;
 	Steering = Limit(Steering, MaxForce);
@@ -84,15 +77,66 @@ void AViking_Ram_Ship::Seek(FVector _Target) {
 	//Limiting the velocity to max speed
 	Limit(Velocity, MaxSpeed);
 	Velocity.Z = 0.0f;
-
 }
 
 // Called every frame
 void AViking_Ram_Ship::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Seek(Target);
-	SetActorLocation(GetActorLocation() + Velocity);
+
+	//If the ship is currently chilling
+	switch (Current_State) {
+		case CHILLING:
+			//If the player is within chasing range
+			if (abs(FVector::Dist(GetActorLocation(), Target) < 1500.0f)) {
+				//switch to chase
+				Current_State = CHASING;
+				UE_LOG(LogClass, Log, TEXT("NOW CHASING"));
+				break;
+			}
+			//else do nothing
+			break;
+		case CHASING:
+			//If the player moves out of chasing range
+			if (abs(FVector::Dist(GetActorLocation(), Target) > 1500.0f)) {
+				//Switch to chilling
+				Current_State = CHILLING;
+				UE_LOG(LogClass, Log, TEXT("NOW CHILLING"));
+
+			}
+
+			//if the player is in explode range
+			else if (abs(FVector::Dist(GetActorLocation(), Target) < 200.0f)) {
+				Current_State = EXPLODING;
+				UE_LOG(LogClass, Log, TEXT("NOW EXPLODING"));
+			}
+
+			//Otherwise just chase
+			else {
+				Seek(Target);
+				SetActorLocation(GetActorLocation() + Velocity);
+			}
+			break;
+		case EXPLODING:
+			if (ExplodeTimer < 250.0f) {
+				
+				ExplodeTimer += 100.0f * DeltaTime;
+				FQuat QRotation = FQuat(FRotator(0.0f, (ExplodeTimer * ExplodeTimer) * 0.025f, 0.0f));
+				SetActorRotation(QRotation, ETeleportType::None);
+				//UE_LOG(LogClass, Log, TEXT("Explode Timer: %d"), ExplodeTimer);
+			}
+			else {
+				UE_LOG(LogClass, Log, TEXT("EXPLODED"));
+				Exploded = true;
+			}
+			break;
+		default: break;
+	}
+	
+
+}
+
+void AViking_Ram_Ship::DestroyShip() {
 
 }
 

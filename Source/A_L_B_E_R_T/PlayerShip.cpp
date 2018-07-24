@@ -20,8 +20,8 @@ APlayerShip::APlayerShip()
 
 	//Ship Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
-	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Boat_Placeholder.Boat_Placeholder'")).Object);
-	ShipMesh->SetSimulatePhysics(true);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Boat/OC_Boat.OC_Boat'")).Object);
+	ShipMesh->SetSimulatePhysics(false);
 	ShipMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ShipMesh->SetRelativeTransform(FTransform(FVector(0.0f, 0.0f, -10.0f)));
 	ShipMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f), false, false);
@@ -30,7 +30,7 @@ APlayerShip::APlayerShip()
 
 	//Steer Viking Mesh
 	Viking_Steer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Steering Viking"));
-	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Viking_Steering.Viking_Steering'")).Object);
+	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Steerer/SteerViking.SteerViking'")).Object);
 	Viking_Steer->SetupAttachment(RootComponent);
 	Viking_Steer->SetSimulatePhysics(false);
 	Viking_Steer->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
@@ -38,16 +38,25 @@ APlayerShip::APlayerShip()
 
 	//Throw Viking Mesh
 	Viking_Throw = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Throwing Viking"));
-	Viking_Throw->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Viking_AxeThrowing.Viking_AxeThrowing'")).Object);
+	Viking_Throw->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Thrower/ThrowViking.ThrowViking'")).Object);
 	Viking_Throw->SetupAttachment(RootComponent);
 	Viking_Throw->SetSimulatePhysics(false);
 	Viking_Throw->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
 	Viking_Throw->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
+	//Rudder 0
+	Ship_Rudder_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ship Rudder"));
+	Ship_Rudder_Mesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Boat/Rudders.Rudders'")).Object);
+	Ship_Rudder_Mesh->SetupAttachment(RootComponent);
+	Ship_Rudder_Mesh->SetSimulatePhysics(false);
+	Ship_Rudder_Mesh->SetRelativeScale3D(FVector(10.1f, 10.1f, 10.1f));
+	Ship_Rudder_Mesh->SetRelativeTransform(FTransform(FVector(0.0f, 2.3f, 1.0f)));
+	Ship_Rudder_Mesh->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f), false, false);
+
 	fCurrentTurnRate = 0.0f;
 	fMaxTurnRate = 1.0f;
 	fCurrentSpeed = 0.0f;
-	fMaxSpeed = 10.0f;
+	fMaxSpeed = 6.0f;
 	fMaxBackSpeed = 3.0f;
 	fFacingDegree = 0;
 
@@ -66,6 +75,7 @@ APlayerShip::APlayerShip()
 
 	// Movement
 	MoveSpeed = 1000.0f;
+
 }
 
 // Called when the game starts or when spawned

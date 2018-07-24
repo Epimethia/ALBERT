@@ -9,6 +9,7 @@
 #include "PlayerShip.h"
 #include "Viking_Ram_Ship.h"
 #include <vector>
+#include <cmath>
 #include "A_L_B_E_R_TGameModeBase.generated.h"
 
 
@@ -25,6 +26,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	std::vector<AViking_Ram_Ship*> ShipVector;
+
+	unsigned int Health;
 };
 
 

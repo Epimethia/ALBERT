@@ -16,6 +16,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
+#include <cmath>
 
 #include "PlayerShip.generated.h"
 
@@ -48,6 +49,7 @@ public:
 
 	//The static mesh for the Ship. Make it editable for now
 	UStaticMeshComponent* ShipMesh;
+	UStaticMeshComponent* Ship_Rudder_Mesh;
 	UStaticMeshComponent* Viking_Steer;
 	UStaticMeshComponent* Viking_Throw;
 
