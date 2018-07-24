@@ -27,7 +27,7 @@ public:
 
 	std::vector<AViking_Ram_Ship*> ShipVector;
 
-	unsigned int Health;
+	//unsigned int Health;
 };
 
 

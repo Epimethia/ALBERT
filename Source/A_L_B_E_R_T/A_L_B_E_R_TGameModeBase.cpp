@@ -14,12 +14,12 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 	//Generating ships
 	
 
-	Health = 10;
+	//Health = 10;
 
-	for (int i = 0; i < 10; ++i) {
-		AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
-		ShipVector.push_back(Ship);
-	}
+	//for (int i = 0; i < 10; ++i) {
+	//	AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
+	//	ShipVector.push_back(Ship);
+	//}
 }
 
 AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer)
@@ -40,8 +40,8 @@ void AA_L_B_E_R_TGameModeBase::Tick(float DeltaSeconds) {
 			if (ShipVector[i]->Exploded == true) {
 				//if it is, check if the player is within range. If the player is, take damage
 				if (abs(FVector::Dist(ShipVector[i]->GetActorLocation(), GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation()) <= 300.0f)) {
-					Health -= 1;
-					UE_LOG(LogClass, Log, TEXT("HEALTH: %d"), Health);
+					//Health -= 1;
+					//UE_LOG(LogClass, Log, TEXT("HEALTH: %d"), Health);
 				}
 				ShipVector[i]->Destroy();
 				GEngine->ForceGarbageCollection(true);
