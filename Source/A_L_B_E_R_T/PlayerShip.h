@@ -17,6 +17,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include <cmath>
+#include "Runtime/Engine/Classes/Animation/AnimSequence.h"
 
 #include "PlayerShip.generated.h"
 
@@ -57,7 +58,7 @@ public:
 	UStaticMeshComponent* Ship_Rudder_Mesh;
 	UStaticMeshComponent* Viking_Steer;
 	UStaticMeshComponent* Viking_Throw;
-
+	UAnimSequence *Anim;
 	class UCameraComponent* Camera;
 	class USpringArmComponent* Camera_Springarm;
 

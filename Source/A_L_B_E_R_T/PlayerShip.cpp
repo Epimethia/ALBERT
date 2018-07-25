@@ -54,6 +54,13 @@ APlayerShip::APlayerShip()
 	Viking_Steer->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
 	Viking_Steer->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
+
+	//SteerAnim
+
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> anim(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'"));
+	Anim = anim.Object;
+
+
 	//Throw Viking Mesh
 	Viking_Throw = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Throwing Viking"));
 	Viking_Throw->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Thrower/ThrowViking.ThrowViking'")).Object);
