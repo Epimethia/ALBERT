@@ -68,10 +68,6 @@ public:
 
 	class UCameraComponent* Camera;
 	class USpringArmComponent* Camera_Springarm;
-
-	UCameraComponent* MiniMap_Cam;
-	USpringArmComponent* MiniMap_Springarm;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) USceneCaptureComponent2D* MiniMap_Capture;
 	
 
 

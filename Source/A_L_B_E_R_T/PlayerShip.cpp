@@ -95,22 +95,6 @@ APlayerShip::APlayerShip()
 	Camera->SetupAttachment(Camera_Springarm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
 
-	//Minimap SpringArm
-	MiniMap_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MiniMap Camera Springarm"));
-	MiniMap_Springarm->SetupAttachment(RootComponent);
-	MiniMap_Springarm->bAbsoluteRotation = true;
-	MiniMap_Springarm->TargetArmLength = 5000.0f;
-	MiniMap_Springarm->RelativeRotation = FRotator(-90.f, 0.f, 0.f);
-	MiniMap_Springarm->bDoCollisionTest = false;
-
-	//MiniMap Cam
-	MiniMap_Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("MiniMap Camera"));
-	MiniMap_Cam->SetupAttachment(MiniMap_Springarm, USpringArmComponent::SocketName);
-	MiniMap_Cam->bUsePawnControlRotation = false;
-
-	//Minimap Capture
-	MiniMap_Capture = CreateDefaultSubobject<USceneCaptureComponent2D>("MiniMap Capture");
-	MiniMap_Capture->SetupAttachment(MiniMap_Cam);
 
 	// Movement
 	MoveSpeed = 1000.0f;
