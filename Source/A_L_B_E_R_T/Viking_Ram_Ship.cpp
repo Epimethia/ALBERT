@@ -107,7 +107,7 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 
 			//if the player is in explode range
 			else if (abs(FVector::Dist(GetActorLocation(), Target) < 200.0f)) {
-				Current_State = EXPLODING;
+				Current_State = ATTACK;
 				UE_LOG(LogClass, Log, TEXT("NOW EXPLODING"));
 			}
 
@@ -117,7 +117,7 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 				SetActorLocation(GetActorLocation() + Velocity);
 			}
 			break;
-		case EXPLODING:
+		case ATTACK:
 			if (ExplodeTimer < 250.0f) {
 				
 				ExplodeTimer += 100.0f * DeltaTime;
