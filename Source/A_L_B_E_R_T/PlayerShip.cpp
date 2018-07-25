@@ -46,28 +46,25 @@ APlayerShip::APlayerShip()
 	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
 	RootComponent = ShipMesh;
 
-	//Steer Viking Mesh
-	Viking_Steer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Steering Viking"));
-	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'")).Object);
-	Viking_Steer->SetupAttachment(RootComponent);
-	Viking_Steer->SetSimulatePhysics(false);
-	Viking_Steer->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
-	Viking_Steer->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
-
 
 	//SteerAnim
+	Anim = ConstructorHelpers::FObjectFinder<UAnimSequence>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'")).Object;
 
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> anim(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'"));
-	Anim = anim.Object;
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	SkeletalMesh->SetupAttachment(RootComponent);
+	SkeletalMesh->SetSkeletalMesh(ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/VikingAssets/Animation/Anim_Steering.Anim_Steering'")).Object);
+	SkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	SkeletalMesh->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
+	SkeletalMesh->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
+	Throw_Anim = ConstructorHelpers::FObjectFinder<UAnimSequence>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_AxeThrowing_Anim.Anim_AxeThrowing_Anim'")).Object;
 
-	//Throw Viking Mesh
-	Viking_Throw = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Throwing Viking"));
-	Viking_Throw->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Thrower/ThrowViking.ThrowViking'")).Object);
-	Viking_Throw->SetupAttachment(RootComponent);
-	Viking_Throw->SetSimulatePhysics(false);
-	Viking_Throw->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
-	Viking_Throw->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
+	Throw_Viking_Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Throw Mesh"));
+	Throw_Viking_Mesh->SetupAttachment(RootComponent);
+	Throw_Viking_Mesh->SetSkeletalMesh(ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/VikingAssets/Animation/Anim_AxeThrowing.Anim_AxeThrowing'")).Object);
+	Throw_Viking_Mesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	Throw_Viking_Mesh->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
+	Throw_Viking_Mesh->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
 	//Rudder 0
 	Ship_Rudder_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ship Rudder"));
@@ -110,6 +107,9 @@ void APlayerShip::BeginPlay()
 	Super::BeginPlay();
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "USING PLAYER SHIP");
+
+	SkeletalMesh->SetAnimation(Anim);
+	SkeletalMesh->Play(true);
 }
 
 // Called every frame
@@ -241,6 +241,9 @@ void APlayerShip::FireShot(FVector FireDirection)
 			{
 				// spawn the projectile
 				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
+				Throw_Viking_Mesh->SetAnimation(Throw_Anim);
+				Throw_Viking_Mesh->SetPlayRate(30.0f);
+				Throw_Viking_Mesh->Play(false);
 			}
 
 			bFiring = false;

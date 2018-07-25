@@ -18,6 +18,7 @@
 #include "Engine/StaticMesh.h"
 #include <cmath>
 #include "Runtime/Engine/Classes/Animation/AnimSequence.h"
+#include "Components/SkeletalMeshComponent.h"
 
 #include "PlayerShip.generated.h"
 
@@ -56,9 +57,13 @@ public:
 	//The static mesh for the Ship. Make it editable for now
 	UStaticMeshComponent* ShipMesh;
 	UStaticMeshComponent* Ship_Rudder_Mesh;
-	UStaticMeshComponent* Viking_Steer;
-	UStaticMeshComponent* Viking_Throw;
-	UAnimSequence *Anim;
+
+	UAnimSequence* Anim;
+	USkeletalMeshComponent* SkeletalMesh;
+
+	UAnimSequence* Throw_Anim;
+	USkeletalMeshComponent* Throw_Viking_Mesh;
+
 	class UCameraComponent* Camera;
 	class USpringArmComponent* Camera_Springarm;
 
