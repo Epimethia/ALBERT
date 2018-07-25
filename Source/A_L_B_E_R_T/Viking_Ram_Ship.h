@@ -22,7 +22,7 @@
 enum STATE {
 	CHILLING,
 	CHASING,
-	EXPLODING
+	ATTACK
 };
 
 UCLASS()
@@ -49,7 +49,7 @@ public:
 	UStaticMeshComponent* ShipMesh;
 
 	STATE Current_State;
-	float ExplodeTimer;
+	float AttackTimer;
 	bool Exploded;
 
 	void DestroyShip();

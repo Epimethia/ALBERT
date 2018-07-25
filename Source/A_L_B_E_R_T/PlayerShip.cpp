@@ -228,12 +228,13 @@ void APlayerShip::FireShot(FVector FireDirection)
 		{
 			const FRotator FireRotation = FireDirection.Rotation();
 			// Spawn projectile at an offset from this pawn
-			FVector SpawnLocation = GetActorLocation() + FireRotation.RotateVector(GunOffset);
+			FVector SpawnLocation = GetActorLocation() + FireRotation.RotateVector(GunOffset) + FVector(0.0f,0.0f, 20.0f);
 			UWorld* const World = GetWorld();
 			if (World != NULL)
 			{
 				// spawn the projectile
 				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
+	
 			}
 
 			bFiring = false;
@@ -244,7 +245,6 @@ void APlayerShip::FireShot(FVector FireDirection)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 			}
-
 			bFiring = false;
 		}
 	}

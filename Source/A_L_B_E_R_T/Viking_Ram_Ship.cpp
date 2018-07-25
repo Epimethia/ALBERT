@@ -26,7 +26,7 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
 	RootComponent = ShipMesh;
 
-	ExplodeTimer = 0.0f;
+	AttackTimer = 0.0f;
 	Exploded = false;
 
 	//static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint(TEXT("Blueprint'/Game/StarterContent/Blueprints/Blueprint_Effect_Fire.Blueprint_Effect_Fire'"));
@@ -34,7 +34,7 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 	
 
 	Velocity = FVector();
-	MaxSpeed = 4.0f;
+	MaxSpeed = 6.0f;
 	MaxForce = 0.5f;
 	ApproachRadius = 100.0f;
 }
@@ -107,7 +107,7 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 
 			//if the player is in explode range
 			else if (abs(FVector::Dist(GetActorLocation(), Target) < 200.0f)) {
-				Current_State = EXPLODING;
+				Current_State = ATTACK;
 				UE_LOG(LogClass, Log, TEXT("NOW EXPLODING"));
 			}
 
@@ -115,13 +115,14 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 			else {
 				Seek(Target);
 				SetActorLocation(GetActorLocation() + Velocity);
+				SetActorRotation(Velocity.Rotation() + FRotator(0.0f, 90.0f, 0.0f));
 			}
 			break;
-		case EXPLODING:
-			if (ExplodeTimer < 250.0f) {
+		case ATTACK:
+			if (AttackTimer < 150.0f) {
 				
-				ExplodeTimer += 100.0f * DeltaTime;
-				FQuat QRotation = FQuat(FRotator(0.0f, (ExplodeTimer * ExplodeTimer) * 0.025f, 0.0f));
+				AttackTimer += 300.0f * DeltaTime;
+				FQuat QRotation = FQuat(FRotator(0.0f, (AttackTimer * AttackTimer) * 0.04f, 0.0f));
 				SetActorRotation(QRotation, ETeleportType::None);
 				//UE_LOG(LogClass, Log, TEXT("Explode Timer: %d"), ExplodeTimer);
 			}

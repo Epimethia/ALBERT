@@ -14,12 +14,14 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 	//Generating ships
 	
 
-	//Health = 10;
+	Health = 10;
 
-	//for (int i = 0; i < 10; ++i) {
-	//	AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
-	//	ShipVector.push_back(Ship);
-	//}
+	for (int i = 0; i < 10; ++i) {
+		AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
+		ShipVector.push_back(Ship);
+	}
+	AViking_Shoot_Ship* Ship = GetWorld()->SpawnActor<AViking_Shoot_Ship>(AViking_Shoot_Ship::StaticClass(), FVector(-1000.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
+	ShipVector.push_back(Ship);
 }
 
 AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer)
