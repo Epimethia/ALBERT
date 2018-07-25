@@ -46,21 +46,25 @@ APlayerShip::APlayerShip()
 	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
 	RootComponent = ShipMesh;
 
-	//Steer Viking Mesh
-	Viking_Steer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Steering Viking"));
-	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Steerer/SteerViking.SteerViking'")).Object);
-	Viking_Steer->SetupAttachment(RootComponent);
-	Viking_Steer->SetSimulatePhysics(false);
-	Viking_Steer->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
-	Viking_Steer->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
-	//Throw Viking Mesh
-	Viking_Throw = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Throwing Viking"));
-	Viking_Throw->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Thrower/ThrowViking.ThrowViking'")).Object);
-	Viking_Throw->SetupAttachment(RootComponent);
-	Viking_Throw->SetSimulatePhysics(false);
-	Viking_Throw->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
-	Viking_Throw->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
+	//SteerAnim
+	Anim = ConstructorHelpers::FObjectFinder<UAnimSequence>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'")).Object;
+
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	SkeletalMesh->SetupAttachment(RootComponent);
+	SkeletalMesh->SetSkeletalMesh(ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/VikingAssets/Animation/Anim_Steering.Anim_Steering'")).Object);
+	SkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	SkeletalMesh->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));
+	SkeletalMesh->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
+
+	Throw_Anim = ConstructorHelpers::FObjectFinder<UAnimSequence>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_AxeThrowing_Anim.Anim_AxeThrowing_Anim'")).Object;
+
+	Throw_Viking_Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Throw Mesh"));
+	Throw_Viking_Mesh->SetupAttachment(RootComponent);
+	Throw_Viking_Mesh->SetSkeletalMesh(ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/VikingAssets/Animation/Anim_AxeThrowing.Anim_AxeThrowing'")).Object);
+	Throw_Viking_Mesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	Throw_Viking_Mesh->SetRelativeTransform(FTransform(FVector(0.0f, -2.0f, 0.5f)));
+	Throw_Viking_Mesh->SetWorldRotation(FRotator(0.0f, 180.0f, 0.0f), false, false);
 
 	//Rudder 0
 	Ship_Rudder_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ship Rudder"));
@@ -87,9 +91,26 @@ APlayerShip::APlayerShip()
 	Camera_Springarm->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
 												// Create a camera...
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	Camera->SetupAttachment(Camera_Springarm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
+
+	//Minimap SpringArm
+	MiniMap_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MiniMap Camera Springarm"));
+	MiniMap_Springarm->SetupAttachment(RootComponent);
+	MiniMap_Springarm->bAbsoluteRotation = true;
+	MiniMap_Springarm->TargetArmLength = 5000.0f;
+	MiniMap_Springarm->RelativeRotation = FRotator(-90.f, 0.f, 0.f);
+	MiniMap_Springarm->bDoCollisionTest = false;
+
+	//MiniMap Cam
+	MiniMap_Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("MiniMap Camera"));
+	MiniMap_Cam->SetupAttachment(MiniMap_Springarm, USpringArmComponent::SocketName);
+	MiniMap_Cam->bUsePawnControlRotation = false;
+
+	//Minimap Capture
+	MiniMap_Capture = CreateDefaultSubobject<USceneCaptureComponent2D>("MiniMap Capture");
+	MiniMap_Capture->SetupAttachment(MiniMap_Cam);
 
 	// Movement
 	MoveSpeed = 1000.0f;
@@ -102,6 +123,10 @@ void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "USING PLAYER SHIP");
+
+	SkeletalMesh->SetAnimation(Anim);
+	SkeletalMesh->Play(true);
 }
 
 // Called every frame
@@ -124,7 +149,6 @@ void APlayerShip::Tick(float DeltaTime)
 	FVector FireDirection = FVector(fMouseX, fMouseY, 0.f);
 	FireDirection = FireDirection.RotateAngleAxis(90, FVector(0, 0, 1));
 
-
 	FireShot(FireDirection);
 
 }
@@ -139,8 +163,8 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis(MoveRightBinding);
 	PlayerInputComponent->BindAxis(FireForwardBinding);
 	PlayerInputComponent->BindAxis(FireRightBinding);
-	PlayerInputComponent->BindAction(FireMouseBinding, IE_Pressed, this, &APlayerShip::FiringShot);
-	PlayerInputComponent->BindAction(FireMouseBinding, IE_Released, this, &APlayerShip::StopingFire);
+	PlayerInputComponent->BindAction("MouseFire", IE_Pressed, this, &APlayerShip::FiringShot);
+	PlayerInputComponent->BindAction("MouseFire", IE_Released, this, &APlayerShip::StopingFire);
 
 	MyController = Cast<APlayerController>(GetController());
 	if (MyController)
@@ -237,11 +261,13 @@ void APlayerShip::FireShot(FVector FireDirection)
 			{
 				// spawn the projectile
 				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
-	
+				Throw_Viking_Mesh->SetAnimation(Throw_Anim);
+				Throw_Viking_Mesh->SetPlayRate(30.0f);
+				Throw_Viking_Mesh->Play(false);
 			}
 
 			bFiring = false;
-			World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
+			//World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
 
 			// try and play the sound if specified
 			if (FireSound != nullptr)
@@ -265,6 +291,7 @@ void APlayerShip::StopingFire()
 
 void APlayerShip::ShotTimerExpired()
 {
+
 	bCanFire = true;
 }
 

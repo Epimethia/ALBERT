@@ -17,6 +17,9 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/StaticMesh.h"
 #include <cmath>
+#include "Runtime/Engine/Classes/Animation/AnimSequence.h"
+#include "Runtime/Engine/Classes/Components/SceneCaptureComponent2D.h"
+#include "Components/SkeletalMeshComponent.h"
 
 #include "PlayerShip.generated.h"
 
@@ -34,6 +37,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+
+	int Health;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -53,11 +58,21 @@ public:
 	//The static mesh for the Ship. Make it editable for now
 	UStaticMeshComponent* ShipMesh;
 	UStaticMeshComponent* Ship_Rudder_Mesh;
-	UStaticMeshComponent* Viking_Steer;
-	UStaticMeshComponent* Viking_Throw;
+
+	//Vikings
+	UAnimSequence* Anim;
+	USkeletalMeshComponent* SkeletalMesh;
+
+	UAnimSequence* Throw_Anim;
+	USkeletalMeshComponent* Throw_Viking_Mesh;
 
 	class UCameraComponent* Camera;
 	class USpringArmComponent* Camera_Springarm;
+
+	UCameraComponent* MiniMap_Cam;
+	USpringArmComponent* MiniMap_Springarm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USceneCaptureComponent2D* MiniMap_Capture;
+	
 
 
 	float MoveSpeed;
