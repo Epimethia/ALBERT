@@ -13,7 +13,7 @@ AEnemy_Projectile::AEnemy_Projectile()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ProjMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjMesh"));
-	ProjMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Shoot_Boat/Enemy_Proj.Enemy_Proj'")).Object);
+	ProjMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Shoot_Boat/Proj/Enemy_Proj.Enemy_Proj'")).Object);
 	ProjMesh->SetupAttachment(RootComponent);
 	//FQuat QRotation = FQuat(FRotator(0, 90, 0));
 	//ProjMesh->SetRelativeRotation(QRotation);

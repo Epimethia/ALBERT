@@ -10,12 +10,11 @@
 APlayerProjectile::APlayerProjectile()
 {
 	// Static reference to the mesh to use for the projectile
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMeshAsset(TEXT("StaticMesh'/Game/VikingAssets/Shoot_Boat/Enemy_Proj.Enemy_Proj'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMeshAsset(TEXT("StaticMesh'/Game/VikingAssets/Thrower/MESH_Axe.MESH_Axe'"));
 
 	// Create mesh component for the projectile sphere
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh0"));
 	ProjectileMesh->SetStaticMesh(ProjectileMeshAsset.Object);
-	ProjectileMesh->SetupAttachment(RootComponent);
 	ProjectileMesh->BodyInstance.SetCollisionProfileName("Projectile");
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &APlayerProjectile::OnHit);		// set up a notification for when this component hits something
 	RootComponent = ProjectileMesh;
@@ -27,19 +26,26 @@ APlayerProjectile::APlayerProjectile()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
-	ProjectileMovement->ProjectileGravityScale = 0.f; // No gravity
+	ProjectileMovement->ProjectileGravityScale = 0.0f; // No gravity
 
 													  // Die after 3 seconds by default
-	InitialLifeSpan = 0.3f;
+	InitialLifeSpan = 0.5f;
 }
 
 void APlayerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	
-	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
 	{
-		OtherActor->Destroy();
+		//Getting the other objects tag array (enemies should have the "ENEMY" tag)
+		for (const auto it : OtherActor->Tags) {
+			if (it == FName("Enemy")) {
+				UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+				//If the tag matches, destroy
+				OtherActor->Destroy();
+				break;
+			}
+		}
 	}
 
 	Destroy();

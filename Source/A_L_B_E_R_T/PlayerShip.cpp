@@ -23,6 +23,7 @@ const FName APlayerShip::MoveRightBinding("MoveRight");
 const FName APlayerShip::FireForwardBinding("FireForward");
 const FName APlayerShip::FireRightBinding("FireRight");
 const FName APlayerShip::FireMouseBinding("MouseFire");
+
 // Sets default values
 APlayerShip::APlayerShip()
 {
@@ -36,16 +37,21 @@ APlayerShip::APlayerShip()
 	MaxForce = 0.5f;
 	ApproachRadius = 100.0f;
 
+	Tags.Add(FName("Player"));
+
+	Score = 0;
+
 	//Ship Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Boat/OC_Boat.OC_Boat'")).Object);
 	ShipMesh->SetSimulatePhysics(false);
-	ShipMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ShipMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ShipMesh->SetRelativeTransform(FTransform(FVector(0.0f, 0.0f, -10.0f)));
 	ShipMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f), false, false);
 	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
+	ShipMesh->OnComponentHit.AddDynamic(this, &APlayerShip::OnHit);
+	ShipMesh->BodyInstance.SetCollisionProfileName("Projectile");
 	RootComponent = ShipMesh;
-
 
 	//SteerAnim
 	Anim = ConstructorHelpers::FObjectFinder<UAnimSequence>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'")).Object;
@@ -86,7 +92,7 @@ APlayerShip::APlayerShip()
 	Camera_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	Camera_Springarm->SetupAttachment(RootComponent);
 	Camera_Springarm->bAbsoluteRotation = true; // Don't want arm to rotate when ship does
-	Camera_Springarm->TargetArmLength = 2000.f;
+	Camera_Springarm->TargetArmLength = 3000.f;
 	Camera_Springarm->RelativeRotation = FRotator(-45.f, 0.f, 0.f);
 	Camera_Springarm->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
@@ -99,7 +105,7 @@ APlayerShip::APlayerShip()
 	MiniMap_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MiniMap Camera Springarm"));
 	MiniMap_Springarm->SetupAttachment(RootComponent);
 	MiniMap_Springarm->bAbsoluteRotation = true;
-	MiniMap_Springarm->TargetArmLength = 5000.0f;
+	MiniMap_Springarm->TargetArmLength = 2000.0f;
 	MiniMap_Springarm->RelativeRotation = FRotator(-90.f, 0.f, 0.f);
 	MiniMap_Springarm->bDoCollisionTest = false;
 
@@ -150,7 +156,6 @@ void APlayerShip::Tick(float DeltaTime)
 	FireDirection = FireDirection.RotateAngleAxis(90, FVector(0, 0, 1));
 
 	FireShot(FireDirection);
-
 }
 
 // Called to bind functionality to input
@@ -173,6 +178,27 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		MyController->bEnableClickEvents = true;
 		MyController->bEnableMouseOverEvents = true;
 	}
+}
+
+UFUNCTION() void APlayerShip::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit) {
+	//Checking if the other collider is active
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL)) {
+		//Getting the other objects tag array
+		for (const auto it : OtherActor->Tags) {
+
+			//if the chest has the "Complete tag, destroy the chest and incriment score
+			if (it == FName("Completed")) {
+				UE_LOG(LogTemp, Warning, TEXT("TREASURE Aquired"));
+				OtherActor->Destroy();
+				Score++;
+				return;;
+			}
+			UE_LOG(LogTemp, Warning, TEXT("TREASURE COLLIDED BUT NOT AQUIRED"));
+
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Checking"));
+
 }
 
 void APlayerShip::Movement(float DeltaSeconds)
@@ -262,12 +288,11 @@ void APlayerShip::FireShot(FVector FireDirection)
 				// spawn the projectile
 				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
 				Throw_Viking_Mesh->SetAnimation(Throw_Anim);
-				Throw_Viking_Mesh->SetPlayRate(30.0f);
+				Throw_Viking_Mesh->SetPlayRate(8.0f);
 				Throw_Viking_Mesh->Play(false);
 			}
 
 			bFiring = false;
-			//World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
 
 			// try and play the sound if specified
 			if (FireSound != nullptr)

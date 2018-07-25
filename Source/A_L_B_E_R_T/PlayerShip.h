@@ -38,7 +38,9 @@ protected:
 
 public:
 
-	int Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int Score;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -66,13 +68,14 @@ public:
 	UAnimSequence* Throw_Anim;
 	USkeletalMeshComponent* Throw_Viking_Mesh;
 
-	class UCameraComponent* Camera;
-	class USpringArmComponent* Camera_Springarm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)  UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)  USpringArmComponent* Camera_Springarm;
 
-	UCameraComponent* MiniMap_Cam;
-	USpringArmComponent* MiniMap_Springarm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UCameraComponent* MiniMap_Cam;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USpringArmComponent* MiniMap_Springarm;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USceneCaptureComponent2D* MiniMap_Capture;
 	
+	UFUNCTION() void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 
 	float MoveSpeed;
@@ -97,7 +100,7 @@ private:
 	float fMaxTurnRate;
 
 	//Speed Variables
-	float fMaxSpeed;
+	float fMaxSpeed; 
 	float fMaxBackSpeed;
 	float fCurrentSpeed;
 	float ForwardValue;

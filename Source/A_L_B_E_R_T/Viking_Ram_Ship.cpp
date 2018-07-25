@@ -2,13 +2,6 @@
 
 #include "Viking_Ram_Ship.h"
 //Function to limit vector
-FVector Limit(FVector& _Vect, float _Max) {
-
-	if (_Vect.Size() > _Max * _Max) {
-		_Vect = (_Vect.GetSafeNormal()) * _Max;
-	}
-	return _Vect;
-}
 
 // Sets default values
 AViking_Ram_Ship::AViking_Ram_Ship()
@@ -18,23 +11,21 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 
 	//Ship Mesh
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
-	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Flame_Boat/Fire_Boat.Fire_Boat'")).Object);
+	ShipMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Flame_Boat/Viking_Ram_Ship.Viking_Ram_Ship'")).Object);
 	ShipMesh->SetSimulatePhysics(false);
 	ShipMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ShipMesh->SetRelativeTransform(FTransform(FVector(0.0f, 0.0f, -10.0f)));
 	ShipMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f), false, false);
-	ShipMesh->SetWorldScale3D(FVector(40.0f, -40.0f, 40.0f));
 	RootComponent = ShipMesh;
 
 	AttackTimer = 0.0f;
 	Exploded = false;
 
-	//static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint(TEXT("Blueprint'/Game/StarterContent/Blueprints/Blueprint_Effect_Fire.Blueprint_Effect_Fire'"));
-	//Fire = (UClass*)ItemBlueprint.Object->GeneratedClass;
-	
+	Current_State = CHILLING;
+	Tags.Add(FName("Enemy"));
 
 	Velocity = FVector();
-	MaxSpeed = 6.0f;
+	MaxSpeed = 5.0f;
 	MaxForce = 0.5f;
 	ApproachRadius = 100.0f;
 	Health = 10;
@@ -46,38 +37,6 @@ void AViking_Ram_Ship::BeginPlay()
 	Super::BeginPlay();
 	Target = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	Current_State = CHILLING;
-
-
-}
-
-//Function to seek the player
-void AViking_Ram_Ship::Seek(FVector _Target) {
-	FVector DesiredVelocity;
-
-	//Calculated the desired velocity based on the object's position and the target position
-	DesiredVelocity = _Target - GetActorLocation();
-
-	//Calculating the distance from the object to the target via finding the length of the DesiredVelocity vect
-	float Distance = DesiredVelocity.Size();
-
-	//Normalizing
-	DesiredVelocity = DesiredVelocity.GetSafeNormal() * MaxSpeed;
-
-	//If the distance to the target is less than the approach distance (is in "approach" mode)
-	if (Distance < ApproachRadius) {
-		//Reduce the speed
-		DesiredVelocity *= (Distance / ApproachRadius);
-	}
-
-	//Calculating the max force that would be applied to the object
-	FVector Steering = DesiredVelocity - Velocity;
-	Steering = Limit(Steering, MaxForce);
-
-	//Adding the objects current Steering force to the velocity
-	Velocity += Steering;
-	//Limiting the velocity to max speed
-	Limit(Velocity, MaxSpeed);
-	Velocity.Z = 0.0f;
 }
 
 // Called every frame
@@ -140,11 +99,6 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 			break;
 		default: break;
 	}
-	
-
 }
 
-void AViking_Ram_Ship::DestroyShip() {
-
-}
 

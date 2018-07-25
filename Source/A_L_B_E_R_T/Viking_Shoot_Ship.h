@@ -3,23 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Viking_Ram_Ship.h"
 #include "Enemy_Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include <vector>
-
+#include "Viking_Ship_Base.h"
 #include "Viking_Shoot_Ship.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
-class A_L_B_E_R_T_API AViking_Shoot_Ship : public AViking_Ram_Ship
+class A_L_B_E_R_T_API AViking_Shoot_Ship : public AViking_Ship_Base
 {
 	GENERATED_BODY()
 	
 public:
+
+	AViking_Shoot_Ship();
 	virtual void Tick(float DeltaTime) override;
-	//Vector of Bullets
-	std::vector<AEnemy_Projectile*> EnemyBullets;
+
+	STATE Current_State;
+	float AttackTimer;
+	bool Exploded;
+
+
+
 };
