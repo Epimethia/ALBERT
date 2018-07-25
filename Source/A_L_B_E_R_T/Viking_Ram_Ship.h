@@ -61,4 +61,6 @@ public:
 	float ApproachRadius;
 
 	FVector Target;
+
+	int Health;
 };

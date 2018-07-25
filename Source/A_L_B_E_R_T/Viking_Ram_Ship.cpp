@@ -37,6 +37,7 @@ AViking_Ram_Ship::AViking_Ram_Ship()
 	MaxSpeed = 6.0f;
 	MaxForce = 0.5f;
 	ApproachRadius = 100.0f;
+	Health = 10;
 }
 
 // Called when the game starts or when spawned
@@ -84,6 +85,10 @@ void AViking_Ram_Ship::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Health <= 0)
+	{
+
+	}
 	//If the ship is currently chilling
 	switch (Current_State) {
 		case CHILLING:
