@@ -252,16 +252,10 @@ void APlayerShip::FireShot(FVector FireDirection)
 
 void APlayerShip::FiringShot()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "FIRE IN THE HOLE");
-	UE_LOG(LogTemp, Warning, TEXT("Fire"));
-
 	bFiring = true;
 }
 void APlayerShip::StopingFire()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "FIRE IN THE HOLE");
-	UE_LOG(LogTemp, Warning, TEXT("Stop"));
-
 	bFiring = false;
 }
 
