@@ -102,6 +102,7 @@ void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "USING PLAYER SHIP");
 }
 
 // Called every frame
@@ -121,7 +122,6 @@ void APlayerShip::Tick(float DeltaTime)
 	FVector FireDirection = FVector(fMouseX, fMouseY, 0.f);
 	FireDirection = FireDirection.RotateAngleAxis(90, FVector(0, 0, 1));
 
-
 	FireShot(FireDirection);
 
 }
@@ -136,8 +136,8 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis(MoveRightBinding);
 	PlayerInputComponent->BindAxis(FireForwardBinding);
 	PlayerInputComponent->BindAxis(FireRightBinding);
-	PlayerInputComponent->BindAction(FireMouseBinding, IE_Pressed, this, &APlayerShip::FiringShot);
-	PlayerInputComponent->BindAction(FireMouseBinding, IE_Released, this, &APlayerShip::StopingFire);
+	PlayerInputComponent->BindAction("MouseFire", IE_Pressed, this, &APlayerShip::FiringShot);
+	PlayerInputComponent->BindAction("MouseFire", IE_Released, this, &APlayerShip::StopingFire);
 
 	MyController = Cast<APlayerController>(GetController());
 	if (MyController)
@@ -237,7 +237,7 @@ void APlayerShip::FireShot(FVector FireDirection)
 			}
 
 			bFiring = false;
-			World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
+			//World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &APlayerShip::ShotTimerExpired, FireRate);
 
 			// try and play the sound if specified
 			if (FireSound != nullptr)
@@ -252,16 +252,23 @@ void APlayerShip::FireShot(FVector FireDirection)
 
 void APlayerShip::FiringShot()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "FIRE IN THE HOLE");
+	UE_LOG(LogTemp, Warning, TEXT("Fire"));
+
 	bFiring = true;
 }
 void APlayerShip::StopingFire()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "FIRE IN THE HOLE");
+	UE_LOG(LogTemp, Warning, TEXT("Stop"));
+
 	bFiring = false;
 }
 
 
 void APlayerShip::ShotTimerExpired()
 {
+
 	bCanFire = true;
 }
 

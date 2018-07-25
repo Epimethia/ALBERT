@@ -16,10 +16,10 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 
 	//Health = 10;
 
-	//for (int i = 0; i < 10; ++i) {
-	//	AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
-	//	ShipVector.push_back(Ship);
-	//}
+	for (int i = 0; i < 1; ++i) {
+		AViking_Ram_Ship* Ship = GetWorld()->SpawnActor<AViking_Ram_Ship>(AViking_Ram_Ship::StaticClass(), FVector(0.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
+		ShipVector.push_back(Ship);
+	}
 }
 
 AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer)
