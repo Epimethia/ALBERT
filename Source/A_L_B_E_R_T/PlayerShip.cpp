@@ -48,7 +48,7 @@ APlayerShip::APlayerShip()
 
 	//Steer Viking Mesh
 	Viking_Steer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Steering Viking"));
-	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Steerer/SteerViking.SteerViking'")).Object);
+	Viking_Steer->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("AnimSequence'/Game/VikingAssets/Animation/Anim_Steering_Anim.Anim_Steering_Anim'")).Object);
 	Viking_Steer->SetupAttachment(RootComponent);
 	Viking_Steer->SetSimulatePhysics(false);
 	Viking_Steer->SetRelativeTransform(FTransform(FVector(0.0f, 2.0f, 0.5f)));

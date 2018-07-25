@@ -31,7 +31,7 @@ APlayerProjectile::APlayerProjectile()
 	ProjectileMovement->ProjectileGravityScale = 0.f; // No gravity
 
 													  // Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 0.3f;
 }
 
 void APlayerProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

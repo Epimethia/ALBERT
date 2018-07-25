@@ -34,6 +34,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+
+	int Health;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
