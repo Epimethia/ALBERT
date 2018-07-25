@@ -75,7 +75,7 @@ void AViking_Shoot_Ship::Tick(float DeltaTime)
 			if (FireDirec.SizeSquared() > 0.0f)
 			{
 				const FRotator FireRotation = FireDirec.Rotation();
-				FVector SpawnLocation = GetActorLocation() + FireRotation.RotateVector(FVector(170.0f, 0.0f, 0.0f)) + FVector(0.0f, 0.0f, 20.0f);
+				FVector SpawnLocation = GetActorLocation() + FireRotation.RotateVector(FVector(240.0f, 0.0f, 0.0f)) + FVector(0.0f, 0.0f, 20.0f);
 				UWorld* const World = GetWorld();
 				if (World != NULL)
 				{

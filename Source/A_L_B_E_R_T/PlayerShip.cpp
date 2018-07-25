@@ -93,7 +93,7 @@ APlayerShip::APlayerShip()
 
 	// Movement
 	MoveSpeed = 1000.0f;
-	GunOffset = FVector(170.f, 0.f, 0.f);
+	GunOffset = FVector(240.f, 0.f, 0.f);
 	FireRate = 0.1f;
 }
 
@@ -114,8 +114,11 @@ void APlayerShip::Tick(float DeltaTime)
 	float fMouseY;
 	int iWidth;
 	int iHeight;
-	MyController->GetMousePosition(fMouseX, fMouseY);
-	MyController->GetViewportSize(iWidth, iHeight);
+	if (MyController != NULL)
+	{
+		MyController->GetMousePosition(fMouseX, fMouseY);
+		MyController->GetViewportSize(iWidth, iHeight);
+	}
 	fMouseX = fMouseX - (iWidth / 2);
 	fMouseY = fMouseY - (iHeight / 2);
 	FVector FireDirection = FVector(fMouseX, fMouseY, 0.f);

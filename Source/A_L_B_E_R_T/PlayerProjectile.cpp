@@ -10,7 +10,7 @@
 APlayerProjectile::APlayerProjectile()
 {
 	// Static reference to the mesh to use for the projectile
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMeshAsset(TEXT("/Game/VikingAssets/TwinStickProjectile.TwinStickProjectile"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ProjectileMeshAsset(TEXT("StaticMesh'/Game/VikingAssets/Shoot_Boat/Enemy_Proj.Enemy_Proj'"));
 
 	// Create mesh component for the projectile sphere
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh0"));

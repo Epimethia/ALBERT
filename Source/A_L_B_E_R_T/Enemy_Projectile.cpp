@@ -14,9 +14,11 @@ AEnemy_Projectile::AEnemy_Projectile()
 	
 	ProjMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjMesh"));
 	ProjMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/VikingAssets/Shoot_Boat/Enemy_Proj.Enemy_Proj'")).Object);
-	ProjMesh->SetSimulatePhysics(false);
-	ProjMesh->SetRelativeScale3D(FVector(50.0f, 50.0f, 50.0f));
-	ProjMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProjMesh->SetupAttachment(RootComponent);
+	//FQuat QRotation = FQuat(FRotator(0, 90, 0));
+	//ProjMesh->SetRelativeRotation(QRotation);
+	ProjMesh->BodyInstance.SetCollisionProfileName("Projectile");
+	ProjMesh->OnComponentHit.AddDynamic(this, &AEnemy_Projectile::OnHit);
 	RootComponent = ProjMesh;
 
 
@@ -36,4 +38,11 @@ AEnemy_Projectile::AEnemy_Projectile()
 
 void AEnemy_Projectile::Tick(float DeltaTime) {
 	Lifetime += 300.0f * DeltaTime;
+}
+
+
+void AEnemy_Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogClass, Log, TEXT("HITHIT"));
+	Destroy();
 }
