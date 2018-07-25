@@ -83,7 +83,9 @@ void AViking_Ram_Ship::Seek(FVector _Target) {
 // Called every frame
 void AViking_Ram_Ship::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
+	if (Exploded) Destroy();
 
 	if (Health <= 0)
 	{

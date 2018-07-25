@@ -91,9 +91,26 @@ APlayerShip::APlayerShip()
 	Camera_Springarm->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
 												// Create a camera...
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	Camera->SetupAttachment(Camera_Springarm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
+
+	//Minimap SpringArm
+	MiniMap_Springarm = CreateDefaultSubobject<USpringArmComponent>(TEXT("MiniMap Camera Springarm"));
+	MiniMap_Springarm->SetupAttachment(RootComponent);
+	MiniMap_Springarm->bAbsoluteRotation = true;
+	MiniMap_Springarm->TargetArmLength = 5000.0f;
+	MiniMap_Springarm->RelativeRotation = FRotator(-90.f, 0.f, 0.f);
+	MiniMap_Springarm->bDoCollisionTest = false;
+
+	//MiniMap Cam
+	MiniMap_Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("MiniMap Camera"));
+	MiniMap_Cam->SetupAttachment(MiniMap_Springarm, USpringArmComponent::SocketName);
+	MiniMap_Cam->bUsePawnControlRotation = false;
+
+	//Minimap Capture
+	MiniMap_Capture = CreateDefaultSubobject<USceneCaptureComponent2D>("MiniMap Capture");
+	MiniMap_Capture->SetupAttachment(MiniMap_Cam);
 
 	// Movement
 	MoveSpeed = 1000.0f;
@@ -244,13 +261,9 @@ void APlayerShip::FireShot(FVector FireDirection)
 			{
 				// spawn the projectile
 				World->SpawnActor<APlayerProjectile>(SpawnLocation, FireRotation);
-<<<<<<< HEAD
-	
-=======
 				Throw_Viking_Mesh->SetAnimation(Throw_Anim);
 				Throw_Viking_Mesh->SetPlayRate(30.0f);
 				Throw_Viking_Mesh->Play(false);
->>>>>>> Mechanics
 			}
 
 			bFiring = false;

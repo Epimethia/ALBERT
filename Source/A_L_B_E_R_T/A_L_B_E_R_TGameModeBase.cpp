@@ -3,6 +3,7 @@
 #include "A_L_B_E_R_TGameModeBase.h"
 
 void AA_L_B_E_R_TGameModeBase::StartPlay() {
+
 	Super::StartPlay();
 
 	if (GEngine)
@@ -10,7 +11,6 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("HELLO WORLD"));
 	}
 	GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(FVector(-2290.0f, 231.0f, 40.0f));
-<<<<<<< HEAD
 
 	//Generating ships
 	
@@ -23,8 +23,6 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 	}
 	AViking_Shoot_Ship* Ship = GetWorld()->SpawnActor<AViking_Shoot_Ship>(AViking_Shoot_Ship::StaticClass(), FVector(-1000.0f, 0.0f, 40.0f), FRotator(0.0f, 0.0f, 0.0f));
 	ShipVector.push_back(Ship);
-=======
->>>>>>> Mechanics
 }
 
 AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer)
@@ -32,6 +30,7 @@ AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& Obj
 {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
+	DefaultPawnClass = APlayerShip::StaticClass();
 
 }
 
@@ -39,27 +38,18 @@ void AA_L_B_E_R_TGameModeBase::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	
 	
-	//if (!ShipVector.empty()) {
-	//	for (int i = 0; i < ShipVector.size(); ++i) {
-	//		//Checking if the ship is marked to explode
-	//		if (ShipVector[i]->Exploded == true) {
-	//			//if it is, check if the player is within range. If the player is, take damage
-	//			if (abs(FVector::Dist(ShipVector[i]->GetActorLocation(), GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation()) <= 300.0f)) {
-	//				//Health -= 1;
-	//				//UE_LOG(LogClass, Log, TEXT("HEALTH: %d"), Health);
-	//			}
-	//			ShipVector[i]->Destroy();
-	//			GEngine->ForceGarbageCollection(true);
-	//			ShipVector.erase(ShipVector.begin() + i);
-	//		}
-	//		//Otherwise update the target location
-	//		else {
-	//			ShipVector[i]->Target = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	//		}
+	if (!ShipVector.empty()) {
+		for (int i = 0; i < ShipVector.size(); ++i) {
+			if (!ShipVector[i]) {
+				ShipVector.erase(ShipVector.begin() + i);
+			}
+			else {
+				ShipVector[i]->Target = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+			}
+		}
 
-	//		
-	//	}
-	//}
+	}
+
 
 	
 
