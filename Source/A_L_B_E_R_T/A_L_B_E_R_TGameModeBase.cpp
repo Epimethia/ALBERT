@@ -25,7 +25,7 @@ void AA_L_B_E_R_TGameModeBase::StartPlay() {
 AA_L_B_E_R_TGameModeBase::AA_L_B_E_R_TGameModeBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	//DefaultPawnClass = APlayerShip::StaticClass();
+	DefaultPawnClass = APlayerShip::StaticClass();
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 }
